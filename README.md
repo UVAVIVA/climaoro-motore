@@ -72,37 +72,31 @@ Quando una zona lavora in modalità *Comfort* o *Eco*, le stanze vengono organiz
 
 ---
 
-## Configurazione
+## Installazione
 
-Tutte le definizioni di appartamenti, gruppi, stanze e calendari si gestiscono dinamicamente via App o chiamate REST (con salvataggio persistente in memoria NVS).
+### 1. Configura le credenziali WiFi
 
-Gli unico parametro di avvio richiesto a codice è:
+Copia [`src/secrets.h.example`](src/secrets.h.example) in `src/secrets.h` e imposta il tuo SSID, password e IP statico del motore.
 
-- **Rete & IP Statico**: [Credenziali Wi-Fi e IP - esempio pronto da copiare](src/secrets.h.example) → copia in `src/secrets.h` e compila i tuoi dati. *(Il file `secrets.h` è escluso dal tracciamento Git).*
-
-I termostati si aggiungono e configurano direttamente dall'App dopo l'installazione.
-
----
-
-## Build e Flash
-
-Il progetto si basa sul framework **ESP-IDF** integrato in **PlatformIO**.
-
-### Compilazione
+### 2. Compila il firmware
 
 ```bash
 pio run
 ```
 
-Il file binario generato sarà disponibile in `.pio/build/climaoro-motore/firmware.bin`.
+Il file binario sarà in `.pio/build/climaoro-motore/firmware.bin`.
 
-### Flash tramite esptool
+### 3. Flasha l'ESP32
 
 ```bash
 esptool.py --port COMx --baud 460800 write_flash 0x10000 .pio/build/climaoro-motore/firmware.bin
 ```
 
-*(Sostituisci `COMx` con la porta seriale corrispondente al tuo sistema).*
+*(Sostituisci `COMx` con la porta seriale corretta).*
+
+### 4. Installa l'App e aggiungi i termostati
+
+Dopo il flash, il motore è online. Installa l'App Flutter ([climaoro-app](https://github.com/UVAVIVA/climaoro-app)) e aggiungi i termostati dalla schermata di configurazione.
 
 ---
 
@@ -118,14 +112,6 @@ Il motore espone un set completo di API HTTP per l'integrazione con l'App e con 
 | `/api/config/reset` | POST | Reset config a default |
 | `/api/master` | GET/POST | Stato/attivazione master |
 | `/api/climaoro/status` | GET | Stato dettagliato decision engine |
-
----
-
-## File per l'installazione
-
-| File | Descrizione |
-| --- | --- |
-| [`src/secrets.h.example`](src/secrets.h.example) | Credenziali WiFi/IP — copiare in `secrets.h` |
 
 ---
 
