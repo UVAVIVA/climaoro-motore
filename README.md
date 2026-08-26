@@ -1,47 +1,9 @@
 # CLIMAORO Motore
 **Il cervello stand-alone per la gestione intelligente del riscaldamento a pavimento su ESP32-S3.**
 
----
-
-## Installazione Rapida
-
-### Windows
-1. Scarica il file [`install.bat`](install.bat)
-2. Fai **doppio clic** su `install.bat`
-3. Rispondi alle domande (WiFi, IP, termostati)
-4. Attendi: lo script fa tutto da solo (scarica, configura, compila e carica)
-
-### Linux / macOS
-1. Scarica [`install.sh`](install.sh)
-2. Apri un terminale nella cartella del file e scrivi:
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
-3. Rispondi alle domande
-4. Fine
-
-### Cosa fa lo script
-- Installa Python e PlatformIO se non ci sono gia
-- Scarica il codice del motore da GitHub
-- Crea i file di configurazione con i tuoi dati
-- Compila e carica il firmware sull'ESP32
-- Avvia il monitor seriale per vedere i log
-
-### Problemi?
-- Usa un cavo USB dati (non solo ricarica)
-- Se l'ESP non viene rilevato, cambia porta USB o controlla i driver CH343
-- Se lo script si blocca, riavvialo: non perdera i tuoi dati gia inseriti
-
----
-
-## Links
-
-- **[ISTRUZIONI PER L'INSTALLAZIONE](ISTRUZIONI.md)** ← Istruzioni dettagliate
+- **[ISTRUZIONI PER L'INSTALLAZIONE](ISTRUZIONI.md)**
 - **Sito web:** [https://UVAVIVA.github.io/CLIMAORO/](https://UVAVIVA.github.io/CLIMAORO/)
 - **Progetto principale:** [https://github.com/UVAVIVA/CLIMAORO](https://github.com/UVAVIVA/CLIMAORO)
-- **Componenti ESPHome:** [https://github.com/UVAVIVA/climaoro-components](https://github.com/UVAVIVA/climaoro-components)
-- **Codice sorgente:** [https://github.com/UVAVIVA/climaoro-motore](https://github.com/UVAVIVA/climaoro-motore)
 
 ---
 
@@ -52,6 +14,8 @@ CLIMAORO nasce per risolvere un problema concreto: coordinare il riscaldamento d
 Nelle prime versioni, la logica decisionale risiedeva all'interno di Home Assistant tramite uno script AppDaemon. Sebbene funzionante, la soluzione soffriva di un limite strutturale: l'infrastruttura di riscaldamento dipendeva dalla stabilita dell'infrastruttura domotica generale. Se il server si bloccava o andava in manutenzione, l'impianto smetteva di prendere decisioni.
 
 La svolta e stata la **decentralizzazione**: trasferire l'intero motore decisionale su un microcontrollore dedicato ESP32-S3. Un hardware essenziale, economico e privo di dipendenze esterne. Ogni 60 secondi valuta i sensori, consulta il calendario di zona e comanda i termostati. Senza server, senza cloud, senza interruzioni.
+
+<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="30%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="30%">
 
 ---
 
@@ -64,6 +28,8 @@ L'architettura del sistema si articola su tre livelli ben distinti:
 | **Termostati** | *Esecutori* | ESP32 periferici posizionati nelle singole stanze. Leggono temperatura e umidita, pilotano gli attuatori del pavimento radiante ed espongono endpoint web in rete locale. |
 | **Motore** *(questo firmware)* | *Coordinatore* | Interroga periodicamente i termostati via HTTP/SSE, applica le regole di gruppo e la matrice oraria, inviando i comandi di accensione o spegnimento. |
 | **App** | *Interfaccia* | Client multipiattaforma (Flutter) per monitoraggio e configurazione. **Il motore e del tutto autonomo**: se l'app e chiusa o disconnessa, la regolazione prosegue indisturbata. |
+
+<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
 
 ---
 
@@ -83,14 +49,6 @@ Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizz
 2. **Soglia Pesi**: Una somma pesata dei fabbisogni delle stanze per evitare micro-accensioni inefficienti del generatore.
 3. **Priorita di Mantenimento**: Se una stanza del gruppo e gia in fase di riscaldamento (`heating`), ha la precedenza e mantiene l'impianto attivo.
 4. **Verifica della Centralizzata**: Prima di ogni cambio di setpoint, il motore verifica che la modalita centralizzata sia attiva sul termostato destinatario (con retry fino a 2 tentativi).
-
----
-
-## Foto
-
-<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="40%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="40%">
-
-<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="40%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="40%">
 
 ---
 
