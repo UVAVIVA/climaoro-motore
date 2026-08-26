@@ -1,0 +1,22 @@
+# PlatformIO
+.pio/
+.vscode/
+.sdkconfig
+.sdkconfig.old
+
+# Build output
+build/
+bin/
+firmware.bin
+
+# Secrets
+src/secrets.h
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+*.code-workspace
+.idea/
