@@ -4,7 +4,7 @@
 
 ### Windows
 
-1. Scarica il file [`install.bat`](install.bat)
+1. Scarica il file `install.bat` — [DOWNLOAD QUI](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.bat)
 2. Fai **doppio clic** su `install.bat`
 3. Lo script:
    - Installa Python e PlatformIO se non ci sono gia
