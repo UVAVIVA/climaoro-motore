@@ -11,6 +11,7 @@ firmware.bin
 
 # Secrets
 src/secrets.h
+src/devices.c
 
 # OS
 .DS_Store
