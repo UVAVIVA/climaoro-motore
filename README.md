@@ -14,6 +14,8 @@ Nelle prime versioni, la logica decisionale risiedeva all'interno di Home Assist
 
 La svolta e stata la **decentralizzazione**: trasferire l'intero motore decisionale su un microcontrollore dedicato ESP32-S3. Un hardware essenziale, economico e privo di dipendenze esterne. Ogni 60 secondi valuta i sensori, consulta il calendario di zona e comanda i termostati. Senza server, senza cloud, senza interruzioni.
 
+<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="30%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="30%">
+
 ---
 
 ## 🧩 Come Funziona
@@ -30,7 +32,7 @@ L'architettura del sistema si articola su tre livelli ben distinti:
 
 ## 🧠 Logica Decisionale
 
-<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="30%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="30%"> <img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
+<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
 
 Il motore opera sulla base di una matrice settimanale (7 giorni x 24 ore) con tre stati operativi per ogni blocco orario:
 
