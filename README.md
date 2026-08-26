@@ -1,13 +1,9 @@
 # CLIMAORO Motore
 **Il cervello stand-alone per la gestione intelligente del riscaldamento a pavimento su ESP32-S3.**
 
-- **[ISTRUZIONI PER L'INSTALLAZIONE](ISTRUZIONI.md)**
-- **Sito web:** [https://UVAVIVA.github.io/CLIMAORO/](https://UVAVIVA.github.io/CLIMAORO/)
-- **Progetto principale:** [https://github.com/UVAVIVA/CLIMAORO](https://github.com/UVAVIVA/CLIMAORO)
-
 ---
 
-## L'Idea
+## 📖 L'Idea
 
 CLIMAORO nasce per risolvere un problema concreto: coordinare il riscaldamento di un appartamento multiproprieta in modo fluido, affidabile e senza punti unici di fallimento.
 
@@ -19,7 +15,7 @@ La svolta e stata la **decentralizzazione**: trasferire l'intero motore decision
 
 ---
 
-## Come Funziona
+## 🧩 Come Funziona
 
 L'architettura del sistema si articola su tre livelli ben distinti:
 
@@ -29,11 +25,11 @@ L'architettura del sistema si articola su tre livelli ben distinti:
 | **Motore** *(questo firmware)* | *Coordinatore* | Interroga periodicamente i termostati via HTTP/SSE, applica le regole di gruppo e la matrice oraria, inviando i comandi di accensione o spegnimento. |
 | **App** | *Interfaccia* | Client multipiattaforma (Flutter) per monitoraggio e configurazione. **Il motore e del tutto autonomo**: se l'app e chiusa o disconnessa, la regolazione prosegue indisturbata. |
 
-<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
-
 ---
 
-## Logica Decisionale
+## 🧠 Logica Decisionale
+
+<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
 
 Il motore opera sulla base di una matrice settimanale (7 giorni x 24 ore) con tre stati operativi per ogni blocco orario:
 
@@ -52,7 +48,7 @@ Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizz
 
 ---
 
-## Specifiche Hardware
+## 🔧 Specifiche Hardware
 
 | Parametro | Dettaglio |
 | --- | --- |
@@ -64,7 +60,7 @@ Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizz
 
 ---
 
-## Configurazione
+## ⚙️ Configurazione
 
 Tutte le definizioni di appartamenti, gruppi, stanze e calendari si gestiscono dinamicamente via App o chiamate REST (con salvataggio persistente in memoria NVS).
 
@@ -75,7 +71,9 @@ Gli unici due parametri di avvio richiesti a codice sono:
 
 ---
 
-## Build e Flash
+## 🔨 Build e Flash
+
+- **[ISTRUZIONI PER L'INSTALLAZIONE](ISTRUZIONI.md)**
 
 Il progetto si basa sul framework **ESP-IDF** integrato in **PlatformIO**.
 
@@ -97,7 +95,7 @@ esptool.py --port COMx --baud 460800 write_flash 0x10000 .pio/build/climaoro-mot
 
 ---
 
-## API REST
+## 🌐 API REST
 
 Il motore espone un set completo di API HTTP per l'integrazione con l'App e con sistemi terzi:
 
@@ -108,7 +106,7 @@ Il motore espone un set completo di API HTTP per l'integrazione con l'App e con 
 
 ---
 
-## Licenza e Responsabilita
+## 📜 Licenza e Responsabilita
 
 **CLIMAORO (c) 2026 by UVAVIVA** · Licenza: **MIT con Condizione di Attribuzione**
 
