@@ -79,6 +79,7 @@ Gli unici due parametri di avvio richiesti a codice sono:
 ## 🔨 Build e Flash
 
 - **[ISTRUZIONI PER L'INSTALLAZIONE](ISTRUZIONI.md)**
+- **[Download install.bat](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.bat)**
 
 Il progetto si basa sul framework **ESP-IDF** integrato in **PlatformIO**.
 
