@@ -17,11 +17,11 @@
 // ============================================================
 
 const device_t DEVICES[DEV_MAX] = {
-    // id              nome             ip                tipo             attivo
-    { "soggiorno",     "SOGGIORNO",     "192.168.1.201",  DEV_THERMOSTAT,  true },
-    { "salotto",       "SALOTTO",       "192.168.1.202",  DEV_THERMOSTAT,  true },
-    // { "camera",     "CAMERA",        "192.168.1.203",  DEV_THERMOSTAT,  true },
-    // { "bagno",      "BAGNO",         "192.168.1.204",  DEV_THERMOSTAT,  true },
+    // id          nome            ip                tipo             attivo
+    { "dev1",      "STANZA_1",     "192.168.1.201",  DEV_THERMOSTAT,  true },
+    { "dev2",      "STANZA_2",     "192.168.1.202",  DEV_THERMOSTAT,  true },
+    // { "dev3",   "STANZA_3",     "192.168.1.203",  DEV_THERMOSTAT,  true },
+    // { "dev4",   "STANZA_4",     "192.168.1.204",  DEV_THERMOSTAT,  true },
 };
 
 int DEVICES_N = 2;

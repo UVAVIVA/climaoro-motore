@@ -76,26 +76,11 @@ Quando una zona lavora in modalità *Comfort* o *Eco*, le stanze vengono organiz
 
 Tutte le definizioni di appartamenti, gruppi, stanze e calendari si gestiscono dinamicamente via App o chiamate REST (con salvataggio persistente in memoria NVS).
 
-Gli unici due parametri di avvio richiesti a codice sono:
+Gli unico parametro di avvio richiesto a codice è:
 
-1. **Rete & IP Statico**: [Credenziali Wi-Fi e IP - esempio pronto da copiare](src/secrets.h.example) → copia in `src/secrets.h` e compila i tuoi dati. *(Il file `secrets.h` è escluso dal tracciamento Git).*
-2. **Mappatura Hardware**: [Elenco dispositivi - esempio pronto da copiare](src/devices_example.c) → copia in `src/devices.c` e adatta alla tua installazione.
+- **Rete & IP Statico**: [Credenziali Wi-Fi e IP - esempio pronto da copiare](src/secrets.h.example) → copia in `src/secrets.h` e compila i tuoi dati. *(Il file `secrets.h` è escluso dal tracciamento Git).*
 
-### Elenco dispositivi
-
-Il file [`devices_example.c`](src/devices_example.c) contiene un esempio commentato:
-
-```c
-const device_t DEVICES[DEV_MAX] = {
-    // id              nome             ip                tipo             attivo
-    { "soggiorno",     "SOGGIORNO",     "192.168.1.201",  DEV_THERMOSTAT,  true },
-    { "salotto",       "SALOTTO",       "192.168.1.202",  DEV_THERMOSTAT,  true },
-};
-```
-
-### Slug entita'
-
-Modifica [`src/slugs.h`](src/slugs.h) se i nomi dei componenti nei tuoi YAML ESPHome sono diversi. Gli slug derivano dal campo `NAME` nei file YAML, con gli accenti sostituiti da underscore.
+I termostati si aggiungono e configurano direttamente dall'App dopo l'installazione.
 
 ---
 
@@ -141,8 +126,6 @@ Il motore espone un set completo di API HTTP per l'integrazione con l'App e con 
 | File | Descrizione |
 | --- | --- |
 | [`src/secrets.h.example`](src/secrets.h.example) | Credenziali WiFi/IP — copiare in `secrets.h` |
-| [`src/devices_example.c`](src/devices_example.c) | Elenco dispositivi — copiare in `devices.c` |
-| [`src/slugs.h`](src/slugs.h) | Slug entita' web |
 
 ---
 
