@@ -7,8 +7,6 @@
 
 - **Sito web:** [https://UVAVIVA.github.io/CLIMAORO/](https://UVAVIVA.github.io/CLIMAORO/)
 - **Progetto principale:** [https://github.com/UVAVIVA/CLIMAORO](https://github.com/UVAVIVA/CLIMAORO)
-- **Componenti ESPHome:** [https://github.com/UVAVIVA/climaoro-components](https://github.com/UVAVIVA/climaoro-components)
-- **Codice sorgente:** [https://github.com/UVAVIVA/climaoro-motore](https://github.com/UVAVIVA/climaoro-motore)
 
 ---
 
@@ -19,6 +17,15 @@ CLIMAORO nasce per risolvere un problema concreto: coordinare il riscaldamento d
 Nelle prime versioni, la logica decisionale risiedeva all'interno di Home Assistant tramite uno script AppDaemon. Sebbene funzionante, la soluzione soffriva di un limite strutturale: l'infrastruttura di riscaldamento dipendeva dalla stabilità dell'infrastruttura domotica generale. Se il server si bloccava o andava in manutenzione, l'impianto smetteva di prendere decisioni.
 
 La svolta è stata la **decentralizzazione**: trasferire l'intero motore decisionale su un microcontrollore dedicato ESP32-S3. Un hardware essenziale, economico e privo di dipendenze esterne. Ogni 60 secondi valuta i sensori, consulta il calendario di zona e comanda i termostati. Senza server, senza cloud, senza interruzioni.
+
+---
+
+## Foto
+
+[![Motore 1](images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg)](images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg)
+[![Motore 2](images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg)](images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg)
+[![Motore 3](images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg)](images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg)
+[![Motore 4](images/a965ce88-6679-4776-bdce-42e957b538df.jpg)](images/a965ce88-6679-4776-bdce-42e957b538df.jpg)
 
 ---
 
@@ -53,12 +60,6 @@ Quando una zona lavora in modalità *Comfort* o *Eco*, le stanze vengono organiz
 
 ---
 
-## Foto
-
-*(Sezione in preparazione — foto del motore e del sistema in funzione)*
-
----
-
 ## Specifiche Hardware
 
 | Parametro | Dettaglio |
@@ -77,8 +78,24 @@ Tutte le definizioni di appartamenti, gruppi, stanze e calendari si gestiscono d
 
 Gli unici due parametri di avvio richiesti a codice sono:
 
-1. **Rete & IP Statico**: Copia `src/secrets.h.example` in `src/secrets.h` e imposta credenziali Wi-Fi e IP riservato. *(Il file `secrets.h` è escluso dal tracciamento Git).*
-2. **Mappatura Hardware**: Nel file `src/devices.c`, definisci la tabella iniziale dei termostati (ID ESPHome, nome e indirizzo IP locale).
+1. **Rete & IP Statico**: [Credenziali Wi-Fi e IP - esempio pronto da copiare](src/secrets.h.example) → copia in `src/secrets.h` e compila i tuoi dati. *(Il file `secrets.h` è escluso dal tracciamento Git).*
+2. **Mappatura Hardware**: [Elenco dispositivi - esempio pronto da copiare](src/devices_example.c) → copia in `src/devices.c` e adatta alla tua installazione.
+
+### Elenco dispositivi
+
+Il file [`devices_example.c`](src/devices_example.c) contiene un esempio commentato:
+
+```c
+const device_t DEVICES[DEV_MAX] = {
+    // id              nome             ip                tipo             attivo
+    { "soggiorno",     "SOGGIORNO",     "192.168.1.201",  DEV_THERMOSTAT,  true },
+    { "salotto",       "SALOTTO",       "192.168.1.202",  DEV_THERMOSTAT,  true },
+};
+```
+
+### Slug entita'
+
+Modifica [`src/slugs.h`](src/slugs.h) se i nomi dei componenti nei tuoi YAML ESPHome sono diversi. Gli slug derivano dal campo `NAME` nei file YAML, con gli accenti sostituiti da underscore.
 
 ---
 
@@ -108,10 +125,24 @@ esptool.py --port COMx --baud 460800 write_flash 0x10000 .pio/build/climaoro-mot
 
 Il motore espone un set completo di API HTTP per l'integrazione con l'App e con sistemi terzi:
 
-- **Stato Globale**: `/api/status`
-- **Gestione Dispositivi**: `/api/devices`
-- **Logica Decisionale & Matrice**: `/api/engine/state`, `/api/engine/master`
-- **Configurazione e Regole**: `/api/config`
+| Endpoint | Metodo | Descrizione |
+| --- | --- | --- |
+| `/api/status` | GET | Stato generale del motore |
+| `/api/devices` | GET | Lista dispositivi configurati |
+| `/api/config` | GET/POST | Configurazione appartamenti/gruppi/stanze |
+| `/api/config/reset` | POST | Reset config a default |
+| `/api/master` | GET/POST | Stato/attivazione master |
+| `/api/climaoro/status` | GET | Stato dettagliato decision engine |
+
+---
+
+## File per l'installazione
+
+| File | Descrizione |
+| --- | --- |
+| [`src/secrets.h.example`](src/secrets.h.example) | Credenziali WiFi/IP — copiare in `secrets.h` |
+| [`src/devices_example.c`](src/devices_example.c) | Elenco dispositivi — copiare in `devices.c` |
+| [`src/slugs.h`](src/slugs.h) | Slug entita' web |
 
 ---
 
