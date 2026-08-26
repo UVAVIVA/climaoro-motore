@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 title CLIMAORO Motore - Installazione guidata
 color 0A
 
