@@ -1,6 +1,9 @@
 # CLIMAORO Motore
 **Il cervello stand-alone per la gestione intelligente del riscaldamento a pavimento su ESP32-S3.**
 
+- **Sito web:** [https://UVAVIVA.github.io/CLIMAORO/](https://UVAVIVA.github.io/CLIMAORO/)
+- **Progetto principale:** [https://github.com/UVAVIVA/CLIMAORO](https://github.com/UVAVIVA/CLIMAORO)
+
 ---
 
 ## 📖 L'Idea
@@ -10,8 +13,6 @@ CLIMAORO nasce per risolvere un problema concreto: coordinare il riscaldamento d
 Nelle prime versioni, la logica decisionale risiedeva all'interno di Home Assistant tramite uno script AppDaemon. Sebbene funzionante, la soluzione soffriva di un limite strutturale: l'infrastruttura di riscaldamento dipendeva dalla stabilita dell'infrastruttura domotica generale. Se il server si bloccava o andava in manutenzione, l'impianto smetteva di prendere decisioni.
 
 La svolta e stata la **decentralizzazione**: trasferire l'intero motore decisionale su un microcontrollore dedicato ESP32-S3. Un hardware essenziale, economico e privo di dipendenze esterne. Ogni 60 secondi valuta i sensori, consulta il calendario di zona e comanda i termostati. Senza server, senza cloud, senza interruzioni.
-
-<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="30%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="30%">
 
 ---
 
@@ -29,15 +30,17 @@ L'architettura del sistema si articola su tre livelli ben distinti:
 
 ## 🧠 Logica Decisionale
 
-<img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
+<img src="images/00b52f18-fcd2-4f22-bc78-fc6dbafb9023.jpg" alt="CLIMAORO Motore 1" width="30%"> <img src="images/48d5ad94-720a-4e18-af88-9c372f740eee.jpg" alt="CLIMAORO Motore 2" width="30%"> <img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
 
 Il motore opera sulla base di una matrice settimanale (7 giorni x 24 ore) con tre stati operativi per ogni blocco orario:
 
-- **Comfort**: Riscaldamento attivo puntato al setpoint di regime.
-- **Eco**: Modalita a risparmio energetico con setpoint ridotto.
-- **Autonomo**: Il motore sospende l'algoritmo centrale e lascia la stanza al controllo locale del termostato.
+| Stato | Descrizione |
+| --- | --- |
+| **Comfort** | Riscaldamento attivo puntato al setpoint di regime |
+| **Eco** | Modalita a risparmio energetico con setpoint ridotto |
+| **Autonomo** | Il motore sospende l'algoritmo centrale e lascia la stanza al controllo locale del termostato |
 
-### Algoritmo di Gruppo e Priorita
+### 🔄 Algoritmo di Gruppo e Priorita
 
 Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizzate in **gruppi**. Per ciascun gruppo l'algoritmo valuta:
 
@@ -99,10 +102,12 @@ esptool.py --port COMx --baud 460800 write_flash 0x10000 .pio/build/climaoro-mot
 
 Il motore espone un set completo di API HTTP per l'integrazione con l'App e con sistemi terzi:
 
-- **Stato Globale**: `/api/status`
-- **Gestione Dispositivi**: `/api/devices`
-- **Logica Decisionale & Matrice**: `/api/engine/state`, `/api/engine/master`
-- **Configurazione e Regole**: `/api/config`
+| Endpoint | Descrizione |
+| --- | --- |
+| `/api/status` | Stato Globale |
+| `/api/devices` | Gestione Dispositivi |
+| `/api/engine/state`, `/api/engine/master` | Logica Decisionale & Matrice |
+| `/api/config` | Configurazione e Regole |
 
 ---
 
@@ -111,17 +116,17 @@ Il motore espone un set completo di API HTTP per l'integrazione con l'App e con 
 **CLIMAORO (c) 2026 by UVAVIVA** · Licenza: **MIT con Condizione di Attribuzione**
 
 **Termini**
-- Attribuzione richiesta (nel codice e sui dispositivi commerciali)
-- Uso commerciale permesso (con attribuzione)
-- Modifiche e derivati permessi
-- Uso, copia, distribuzione e vendita permessi
+- ✅ Attribuzione richiesta (nel codice e sui dispositivi commerciali)
+- ✅ Uso commerciale permesso (con attribuzione)
+- ✅ Modifiche e derivati permessi
+- ✅ Uso, copia, distribuzione e vendita permessi
 
 **Disclaimer**
 Questo progetto e fornito **cosi com'e**, a scopo educativo e sperimentale.
-- Non certificato per uso produttivo
-- **PERICOLO: gli interventi sull'impianto elettrico e termoidraulico devono essere eseguiti solo da personale qualificato**
-- Nessuna garanzia di alcun tipo
-- L'utente si assume ogni rischio
+- ⚠️ Non certificato per uso produttivo
+- ⚠️ ⚡ **PERICOLO: gli interventi sull'impianto elettrico e termoidraulico devono essere eseguiti solo da personale qualificato**
+- ⚠️ Nessuna garanzia di alcun tipo
+- ⚠️ L'utente si assume ogni rischio
 
 **Rispettare sempre le norme elettriche e di sicurezza locali.**
 
