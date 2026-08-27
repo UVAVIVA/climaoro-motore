@@ -124,57 +124,16 @@ echo #define MOTORE_NETMASK "!MOTORE_NM!"
 echo [OK] Configurazione WiFi salvata.
 echo.
 
-:: --- 6. Chiedi termostati ---
-echo [5/7] Configurazione Termostati.
+:: --- 6. Copia file termostati di default ---
+echo [5/7] Creazione file termostati (modificabili dall'app)...
 echo.
-set /p "NUM_DEV=  Quanti termostati? "
-
-(
-echo #include "devices.h"
-echo #include ^<stddef.h^>
-echo.
-echo const device_t DEVICES[DEV_MAX] = {
-) > src\devices.c
-
-for /l %%i in (1,1,!NUM_DEV!) do (
-    echo.
-    echo   --- Termostato %%i ---
-    set /p "DEV_ID=    ID (es. b2): "
-    set /p "DEV_NAME=  Nome (es. SOGGIORNO): "
-    set /p "DEV_IP=    IP (es. 192.168.1.212): "
-    set /p "DEV_TYPE=  Tipo (0=termostato, 1=collettore): "
-    set /p "DEV_ACTIVE= Attivo (1=si, 0=no): "
-
-    if "!DEV_ACTIVE!"=="1" (
-        set "DEV_ACTIVE_BOOL=true"
-    ) else (
-        set "DEV_ACTIVE_BOOL=false"
-    )
-
-    if "!DEV_TYPE!"=="1" (
-        set "DEV_TYPE_ENUM=DEV_COLLECTOR"
-    ) else (
-        set "DEV_TYPE_ENUM=DEV_THERMOSTAT"
-    )
-
-    echo     { "!DEV_ID!", "!DEV_NAME!", "!DEV_IP!", !DEV_TYPE_ENUM!, !DEV_ACTIVE_BOOL! }, >> src\devices.c
+if not exist "src\devices.c" (
+    copy "src\devices_example.c" "src\devices.c" >nul
+    echo [OK] File termostati creato dal template.
+) else (
+    echo [OK] File termostati gia presente.
 )
-
-(
-echo };
 echo.
-echo int DEVICES_N = !NUM_DEV!;
-echo.
-echo const device_t *devices_get(int i^)
-echo {
-echo     if (i ^< 0 ^|^| i ^>= DEVICES_N^) return NULL;
-echo     return ^&DEVICES[i];
-echo }
-) >> src\devices.c
-echo.
-echo [OK] Configurazione termostati salvata.
-echo.
-pause
 
 :: --- 7. Compilazione ---
 echo [6/7] Compilazione in corso...
@@ -213,3 +172,5 @@ echo.
 pio device monitor
 
 pause
+
+

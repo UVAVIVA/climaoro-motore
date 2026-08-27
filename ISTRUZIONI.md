@@ -4,23 +4,25 @@
 
 ### Windows
 
-1. Scarica il file [`install.bat`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install.bat)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
-2. Fai **doppio clic** su `install.bat`
+1. Scarica il file [`install_motore.bat`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install_motore.bat)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
+2. Fai **doppio clic** su `install_motore.bat`
 3. Lo script:
    - Installa Python e PlatformIO se non ci sono gia
    - Scarica il codice del motore da GitHub
-   - Ti chiede i tuoi dati (WiFi, IP, termostati)
+   - Ti chiede i tuoi dati WiFi/IP
    - Compila e carica il firmware sull'ESP32
    - Avvia il monitor seriale per vedere i log
 
+I termostati si aggiungono/modificano dall'app, non dall'installer.
+
 ### Linux / macOS
 
-1. Scarica il file [`install.sh`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install.sh)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
+1. Scarica il file [`install_motore.sh`](https://github.com/UVAVIVA/climaoro-motore/blob/main/install_motore.sh)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[(DOWNLOAD QUI)](https://github.com/UVAVIVA/climaoro-motore/raw/main/install.zip)
 2. Apri un terminale nella cartella del file
 3. Rendilo eseguibile e avvialo:
    ```bash
-   chmod +x install.sh
-   ./install.sh
+   chmod +x install_motore.sh
+   ./install_motore.sh
    ```
 4. Rispondi alle domande dello script
 

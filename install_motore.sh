@@ -91,55 +91,16 @@ EOL
 echo "[OK] Configurazione WiFi salvata."
 echo ""
 
-# --- 5. Chiedi termostati ---
-echo "[4/5] Configurazione Termostati."
+# --- 5. Copia file termostati di default ---
 echo ""
-read -p "  Quanti termostati? " NUM_DEV
-
-cat > src/devices.c << 'EOFHEADER'
-#include "devices.h"
-#include <stddef.h>
-
-const device_t DEVICES[DEV_MAX] = {
-EOFHEADER
-
-for ((i=1; i<=NUM_DEV; i++)); do
-    echo ""
-    echo "  --- Termostato $i ---"
-    read -p "    ID (es. b2): " DEV_ID
-    read -p "    Nome (es. SOGGIORNO): " DEV_NAME
-    read -p "    IP (es. 192.168.1.212): " DEV_IP
-    read -p "    Tipo (0=termostato, 1=collettore): " DEV_TYPE
-    read -p "    Attivo (1=si, 0=no): " DEV_ACTIVE
-
-    if [ "$DEV_ACTIVE" = "1" ]; then
-        DEV_ACTIVE_BOOL="true"
-    else
-        DEV_ACTIVE_BOOL="false"
-    fi
-
-    if [ "$DEV_TYPE" = "1" ]; then
-        DEV_TYPE_ENUM="DEV_COLLECTOR"
-    else
-        DEV_TYPE_ENUM="DEV_THERMOSTAT"
-    fi
-
-    echo "    { \"$DEV_ID\", \"$DEV_NAME\", \"$DEV_IP\", $DEV_TYPE_ENUM, $DEV_ACTIVE_BOOL }," >> src/devices.c
-done
-
-cat >> src/devices.c << EOFCONTENT
-};
-
-int DEVICES_N = $NUM_DEV;
-
-const device_t *devices_get(int i)
-{
-    if (i < 0 || i >= DEVICES_N) return NULL;
-    return &DEVICES[i];
-}
-EOFCONTENT
+echo "[4/5] Creazione file termostati (modificabili dall'app)..."
 echo ""
-echo "[OK] Configurazione termostati salvata."
+if [ ! -f "src/devices.c" ]; then
+    cp src/devices_example.c src/devices.c
+    echo "[OK] File termostati creato dal template."
+else
+    echo "[OK] File termostati gia presente."
+fi
 echo ""
 read -p "Premi Invio per continuare..."
 
