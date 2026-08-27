@@ -3,6 +3,7 @@
 
 - **Sito web:** [https://UVAVIVA.github.io/CLIMAORO/](https://UVAVIVA.github.io/CLIMAORO/)
 - **Progetto principale:** [https://github.com/UVAVIVA/CLIMAORO](https://github.com/UVAVIVA/CLIMAORO)
+- **Istruzioni di installazione:** [https://github.com/UVAVIVA/climaoro-motore/blob/main/ISTRUZIONI.md](https://github.com/UVAVIVA/climaoro-motore/blob/main/ISTRUZIONI.md)
 
 ---
 
