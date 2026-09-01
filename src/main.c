@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -20,11 +21,17 @@
 #include "esph.h"
 #include "engine.h"
 #include "climaoro.h"
+#include "led.h"
 
 static const char *TAG = "motore";
 
 // --- Hook cJSON -> PSRAM per evitare frammentazione SRAM ---
-static void *cjson_psram_malloc(size_t sz)    { return heap_caps_malloc(sz, MALLOC_CAP_SPIRAM); }
+// Se la PSRAM non e' disponibile a runtime, ripiega su SRAM.
+static void *cjson_psram_malloc(size_t sz)
+{
+    void *p = heap_caps_malloc(sz, MALLOC_CAP_SPIRAM);
+    return p ? p : malloc(sz);
+}
 static void  cjson_psram_free(void *p)         { heap_caps_free(p); }
 
 static EventGroupHandle_t s_event_group;
@@ -221,6 +228,87 @@ static const httpd_uri_t uri_devices = {
     .handler = devices_handler,
 };
 
+// POST /api/devices: riceve la lista dei termostati dall'app
+// (nessun dispositivo hardcoded), la salva in NVS e la usa per poll/comandi.
+static esp_err_t devices_post_handler(httpd_req_t *req)
+{
+    int total = req->content_len;
+    if (total <= 0 || total > 8192) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "payload vuoto o troppo grande");
+        return ESP_FAIL;
+    }
+    char *buf = calloc(1, total + 1);
+    if (!buf) { httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "oom"); return ESP_FAIL; }
+    // Legge il body a pezzi finche' non ha ricevuto tutti i content_len byte:
+    // httpd_req_recv puo' restituire il body in piu' chunk, e gestirlo
+    // come singola lettura lascia la connessione bloccata (timeout /
+    // connection reset) con l'app che resta in attesa.
+    int off = 0;
+    while (off < total) {
+        int rec = httpd_req_recv(req, buf + off, total - off);
+        if (rec <= 0) {
+            free(buf);
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "short read");
+            return ESP_FAIL;
+        }
+        off += rec;
+    }
+    buf[off] = '\0';
+
+    cJSON *arr = cJSON_Parse(buf);
+    free(buf);
+    if (!cJSON_IsArray(arr)) {
+        if (arr) cJSON_Delete(arr);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "json invalido");
+        return ESP_FAIL;
+    }
+
+    device_t *list = calloc(DEV_MAX, sizeof(device_t));
+    if (!list) {
+        cJSON_Delete(arr);
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "oom");
+        return ESP_FAIL;
+    }
+    int n = 0;
+    cJSON *item;
+    cJSON_ArrayForEach(item, arr) {
+        if (n >= DEV_MAX) break;
+        cJSON *jid  = cJSON_GetObjectItem(item, "id");
+        cJSON *jnom = cJSON_GetObjectItem(item, "nome");
+        cJSON *jip  = cJSON_GetObjectItem(item, "ip");
+        if (!cJSON_IsString(jid) || !cJSON_IsString(jnom) || !cJSON_IsString(jip)) continue;
+        snprintf(list[n].id,   sizeof(list[n].id),   "%s", jid->valuestring);
+        snprintf(list[n].nome, sizeof(list[n].nome), "%s", jnom->valuestring);
+        snprintf(list[n].ip,   sizeof(list[n].ip),   "%s", jip->valuestring);
+        cJSON *jt = cJSON_GetObjectItem(item, "tipo");
+        list[n].tipo = (cJSON_IsString(jt) && strcmp(jt->valuestring, "collettore") == 0)
+                           ? DEV_COLLECTOR : DEV_THERMOSTAT;
+        cJSON *ja = cJSON_GetObjectItem(item, "attivo");
+        list[n].attivo = !ja || cJSON_IsTrue(ja);
+        n++;
+    }
+    cJSON_Delete(arr);
+
+    n = devices_set(list, n);
+    free(list);
+
+    cJSON *res = cJSON_CreateObject();
+    cJSON_AddBoolToObject(res, "ok", true);
+    cJSON_AddNumberToObject(res, "count", n);
+    const char *json = cJSON_PrintUnformatted(res);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(req, json, HTTPD_RESP_USE_STRLEN);
+    cJSON_free((void *)json);
+    cJSON_Delete(res);
+    return ESP_OK;
+}
+
+static const httpd_uri_t uri_devices_post = {
+    .uri = "/api/devices",
+    .method = HTTP_POST,
+    .handler = devices_post_handler,
+};
+
 // --- Config API: /api/config ---
 
 static esp_err_t config_get_handler(httpd_req_t *req)
@@ -283,6 +371,13 @@ static esp_err_t config_get_handler(httpd_req_t *req)
         cJSON_AddNumberToObject(so, "gruppo", st->gruppo);
         cJSON_AddBoolToObject(so, "inclusa", st->inclusa);
         cJSON_AddNumberToObject(so, "peso", st->peso);
+        // Nome leggibile del dispositivo (l'id resta come riferimento).
+        const char *nome = "";
+        for (int d = 0; d < DEVICES_N; d++) {
+            const device_t *dev = devices_get(d);
+            if (dev && strcmp(dev->id, st->id) == 0) { nome = dev->nome; break; }
+        }
+        cJSON_AddStringToObject(so, "nome", nome);
         cJSON_AddItemToArray(sts, so);
     }
 
@@ -360,13 +455,13 @@ static esp_err_t config_post_handler(httpd_req_t *req)
                     tmp = cJSON_GetObjectItem(gr_item, "label");
                     if (tmp) snprintf(gr->label, sizeof(gr->label), "%s", tmp->valuestring);
                     tmp = cJSON_GetObjectItem(gr_item, "delta_acc_comfort");
-                    gr->delta_acc_comfort = tmp ? (float)tmp->valuedouble : -0.5f;
+                    gr->delta_acc_comfort = tmp ? (float)tmp->valuedouble : 0.0f;
                     tmp = cJSON_GetObjectItem(gr_item, "delta_acc_eco");
-                    gr->delta_acc_eco = tmp ? (float)tmp->valuedouble : -1.0f;
+                    gr->delta_acc_eco = tmp ? (float)tmp->valuedouble : 0.0f;
                     tmp = cJSON_GetObjectItem(gr_item, "delta_sp_comfort");
-                    gr->delta_sp_comfort = tmp ? (float)tmp->valuedouble : 0.5f;
+                    gr->delta_sp_comfort = tmp ? (float)tmp->valuedouble : 0.0f;
                     tmp = cJSON_GetObjectItem(gr_item, "delta_sp_eco");
-                    gr->delta_sp_eco = tmp ? (float)tmp->valuedouble : 1.0f;
+                    gr->delta_sp_eco = tmp ? (float)tmp->valuedouble : 0.0f;
 
                     // Calendario
                     cJSON *cal = cJSON_GetObjectItem(gr_item, "calendario");
@@ -567,6 +662,13 @@ static esp_err_t climaoro_status_handler(httpd_req_t *req)
                     const device_t *dev = devices_get(d);
                     if (dev && strcmp(dev->id, st->id) == 0) { di = d; break; }
                 }
+                // Espone anche il nome leggibile del dispositivo (l'id resta).
+                if (di >= 0) {
+                    const device_t *dev = devices_get(di);
+                    if (dev) cJSON_AddStringToObject(so, "nome", dev->nome);
+                } else {
+                    cJSON_AddStringToObject(so, "nome", "");
+                }
                 if (di >= 0 && g_state[di].online) {
                     double t = esph_value(di, "sensor-temperatura_reale", -273.15);
                     double u = esph_value(di, "sensor-umidit___reale", -1.0);
@@ -617,9 +719,12 @@ static void server_start(void)
 {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.max_uri_handlers = 16;
+    config.stack_size = 8192;   // default 4096: troppo poco se un handler
+                                // dichiara array grandi sullo stack
     if (httpd_start(&s_server, &config) == ESP_OK) {
         httpd_register_uri_handler(s_server, &uri_status);
         httpd_register_uri_handler(s_server, &uri_devices);
+        httpd_register_uri_handler(s_server, &uri_devices_post);
         httpd_register_uri_handler(s_server, &uri_config_get);
         httpd_register_uri_handler(s_server, &uri_config_post);
         httpd_register_uri_handler(s_server, &uri_config_reset);
@@ -632,16 +737,22 @@ static void server_start(void)
 
 void app_main(void)
 {
+    led_init();
     esph_init();
 
     // Redirect cJSON in PSRAM: evita frammentazione della SRAM interna
-    // durante settimane di polling continuo.
+    // durante settimane di polling continuo. Se la PSRAM non e' presente
+    // o non inizializzata, cjson_psram_malloc ripiega sulla SRAM.
+#if defined(CONFIG_SPIRAM)
     cJSON_Hooks json_hooks = {
         .malloc_fn = cjson_psram_malloc,
         .free_fn   = cjson_psram_free,
     };
     cJSON_InitHooks(&json_hooks);
     ESP_LOGI(TAG, "cJSON redirect su PSRAM");
+#else
+    ESP_LOGI(TAG, "cJSON su SRAM (nessuna PSRAM dichiarata)");
+#endif
 
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -655,6 +766,7 @@ void app_main(void)
 
     if (xEventGroupGetBits(s_event_group) & WIFI_CONNECTED_BIT) {
         cl_config_init();
+        devices_init();
         server_start();
         engine_start();
     }

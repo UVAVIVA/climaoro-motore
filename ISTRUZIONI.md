@@ -44,9 +44,8 @@ Se preferisci fare tutto a mano:
 
 1. Scarica il codice dal repository
 2. Copia `src/secrets.h.example` in `src/secrets.h` e compilalo con i tuoi dati WiFi e IP
-3. Copia `src/devices_example.c` in `src/devices.c` e compilalo con i tuoi termostati
-4. Apri il terminale nella cartella del progetto
-5. Compila e carica:
+3. Apri il terminale nella cartella del progetto
+4. Compila e carica:
    ```bash
    pio run
    pio run -t upload
@@ -63,7 +62,6 @@ Se preferisci fare tutto a mano:
 
 ### La compilazione fallisce
 - Controlla che `src/secrets.h` esista e sia compilato correttamente
-- Controlla che `src/devices.c` esista e sia compilato correttamente
 - Leggi i messaggi di errore nel terminale
 
 ### Lo script si blocca

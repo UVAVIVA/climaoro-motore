@@ -91,16 +91,9 @@ EOL
 echo "[OK] Configurazione WiFi salvata."
 echo ""
 
-# --- 5. Copia file termostati di default ---
+# --- 5. Nota termostati ---
 echo ""
-echo "[4/5] Creazione file termostati (modificabili dall'app)..."
-echo ""
-if [ ! -f "src/devices.c" ]; then
-    cp src/devices_example.c src/devices.c
-    echo "[OK] File termostati creato dal template."
-else
-    echo "[OK] File termostati gia presente."
-fi
+echo "[4/5] Termostati: si aggiungono/modificano dall'app, non da questo installer."
 echo ""
 read -p "Premi Invio per continuare..."
 

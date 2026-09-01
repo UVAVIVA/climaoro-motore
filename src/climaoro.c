@@ -251,7 +251,46 @@ void cl_decidi(void)
                 ESP_LOGI(TAG, "soglia raggiunta (%.1f >= %.1f)", totale_pesi, ap->soglia_pesi);
                 accendi = true;
             } else {
+                // Emergenza individuale (sicurezza 0.4): nessuna priorita' ne'
+                // soglia pesi raggiunta, ma la stanza e' molto sotto la soglia di
+                // accensione (temp <= temp_salvata + delta_acc - 0.4): si accende
+                // da sola (replica appdaemon).
                 ESP_LOGI(TAG, "emergenza individuale");
+                for (int si = 0; si < gr->n_stanze; si++) {
+                    int sii = gr->stanze[si];
+                    cl_stanza_t *st = &g_cfg.stanze[sii];
+
+                    int di = -1;
+                    for (int d = 0; d < DEVICES_N; d++) {
+                        const device_t *dev = devices_get(d);
+                        if (dev && strcmp(dev->id, st->id) == 0) { di = d; break; }
+                    }
+                    if (di < 0 || !g_state[di].online || !st->inclusa) continue;
+
+                    float temp_reale = esph_value(di, SLUG_SENSOR_TEMP, -273.15f);
+                    const ent_t *e_ts3 = esph_find(di, SLUG_SENSOR_TSAL);
+                    if (!e_ts3 || !e_ts3->has_value) {
+                        ESP_LOGW(TAG, "[%s] temp_salvata non disponibile, skip emergenza", st->id);
+                        continue;
+                    }
+                    float temp_salvata = (float)e_ts3->value;
+                    float sp_sp = temp_salvata + delta_sp;
+
+                    float soglia_emergenza = temp_salvata + delta_acc - 0.4f;
+                    if (temp_reale > soglia_emergenza) {
+                        ESP_LOGD(TAG, "[%s] sotto soglia emergenza (%.1f > %.1f): skip",
+                                 st->id, temp_reale, soglia_emergenza);
+                        continue;
+                    }
+
+                    if (!assicura_centralizzata(di)) {
+                        ESP_LOGW(TAG, "[%s] centralizzata non attiva, skip emergenza", st->id);
+                        continue;
+                    }
+                    ESP_LOGI(TAG, "[%s] EMERGENZA: accendo da solo (%.1f <= %.1f)",
+                             st->id, temp_reale, soglia_emergenza);
+                    esph_number_set(devices_get(di)->ip, SLUG_TEMP_SAL, (double)sp_sp);
+                }
             }
 
             if (accendi) {

@@ -18,7 +18,8 @@
 #define CL_STZ_MAX 8
 
 typedef struct {
-    char    id[16];          // es. "b2"
+    char    id[40];          // es. UUID del dispositivo (36 char + NUL);
+                             // deve combaciare con device_t.id per il match
     int     gruppo;          // indice nel gruppo (-1 = non assegnato)
     bool    inclusa;         // inclusione attiva
     float   peso;            // 0..5

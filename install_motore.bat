@@ -124,15 +124,8 @@ echo #define MOTORE_NETMASK "!MOTORE_NM!"
 echo [OK] Configurazione WiFi salvata.
 echo.
 
-:: --- 6. Copia file termostati di default ---
-echo [5/7] Creazione file termostati (modificabili dall'app)...
-echo.
-if not exist "src\devices.c" (
-    copy "src\devices_example.c" "src\devices.c" >nul
-    echo [OK] File termostati creato dal template.
-) else (
-    echo [OK] File termostati gia presente.
-)
+:: --- 6. Nota termostati ---
+echo [5/7] Termostati: si aggiungono/modificano dall'app, non da questo installer.
 echo.
 
 :: --- 7. Compilazione ---

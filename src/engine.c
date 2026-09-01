@@ -3,6 +3,7 @@
 #include "esph.h"
 #include "climaoro.h"
 #include "slugs.h"
+#include "led.h"
 #include "esp_log.h"
 #include "nvs.h"
 #include "freertos/FreeRTOS.h"
@@ -40,6 +41,7 @@ void engine_set_master(bool on)
         nvs_close(h);
     }
     ESP_LOGI(TAG, "master=%d", on);
+    led_set_master(on);
 }
 
 void engine_set_desired(int di, const char *mode)
@@ -140,5 +142,6 @@ void engine_start(void)
     }
     ESP_LOGI(TAG, "avvio motore (master=%d, %d dispositivi)",
              s_master, DEVICES_N);
+    led_set_master(s_master);
     xTaskCreate(engine_task, "engine", 8192, NULL, 5, NULL);
 }

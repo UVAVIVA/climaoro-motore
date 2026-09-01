@@ -26,7 +26,7 @@ L'architettura del sistema si articola su tre livelli ben distinti:
 | Componente | Ruolo | Descrizione |
 | --- | --- | --- |
 | **Termostati** | *Esecutori* | ESP32 periferici posizionati nelle singole stanze. Leggono temperatura e umidita, pilotano gli attuatori del pavimento radiante ed espongono endpoint web in rete locale. |
-| **Motore** *(questo firmware)* | *Coordinatore* | Interroga periodicamente i termostati via HTTP/SSE, applica le regole di gruppo e la matrice oraria, inviando i comandi di accensione o spegnimento. |
+| **Motore** *(questo firmware)* | *Coordinatore* | Interroga periodicamente i termostati via HTTP/SSE, applica le regole di gruppo e la matrice oraria, inviando i comandi di accensione o spegnimento. La configurazione (dispositivi, gruppi, calendario) arriva dall'app tramite **API REST** e viene salvata in NVS. |
 | **App** | *Interfaccia* | Client multipiattaforma (Flutter) per monitoraggio e configurazione. **Il motore e del tutto autonomo**: se l'app e chiusa o disconnessa, la regolazione prosegue indisturbata. |
 
 <img src="images/91745b8e-12b7-4d81-99e9-c87701b7c1f8.jpg" alt="CLIMAORO Motore 3" width="30%"> <img src="images/a965ce88-6679-4776-bdce-42e957b538df.jpg" alt="CLIMAORO Motore 4" width="30%">
@@ -70,10 +70,11 @@ Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizz
 
 Tutte le definizioni di appartamenti, gruppi, stanze e calendari si gestiscono dinamicamente via App o chiamate REST (con salvataggio persistente in memoria NVS).
 
-Gli unici due parametri di avvio richiesti a codice sono:
+L'unico parametro di avvio richiesto a codice e':
 
 1. **Rete & IP Statico**: Copia `src/secrets.h.example` in `src/secrets.h` e imposta credenziali Wi-Fi e IP riservato. *(Il file `secrets.h` e escluso dal tracciamento Git).*
-2. **Mappatura Hardware**: Nel file `src/devices.c`, definisci la tabella iniziale dei termostati (ID ESPHome, nome e indirizzo IP locale).
+
+I dispositivi (termostati/collettori) non sono piu' hardcoded nel firmware: si aggiungono e modificano **dall'App** (via `POST /api/devices`) e vengono salvati in NVS.
 
 ---
 
