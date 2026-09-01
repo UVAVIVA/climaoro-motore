@@ -59,8 +59,9 @@ Quando una zona lavora in modalita *Comfort* o *Eco*, le stanze vengono organizz
 | Parametro | Dettaglio |
 | --- | --- |
 | **SoC** | ESP32-S3 (Dual-Core Xtensa LX7 @ 240MHz) |
-| **Memoria** | 16 MB Flash, 8 MB PSRAM (utilizzata per lo stato dei dispositivi senza frammentare la SRAM) |
-| **Interfaccia USB/Seriale** | CH343 (Baudrate log: 115200) |
+| **Board** | Waveshare ESP32-S3-Zero |
+| **Memoria** | 4 MB Flash, 2 MB PSRAM (utilizzata per lo stato dei dispositivi senza frammentare la SRAM) |
+| **Interfaccia USB/Seriale** | USB-Serial-JTAG nativa (niente CH343; baudrate log: 115200) |
 | **Capacita Massima** | Fino a **16 dispositivi/termostati** gestibili in parallelo |
 | **Integrazione** | Moduli ESPHome esistenti (nessun firmware custom richiesto sui termostati) |
 
