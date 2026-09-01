@@ -58,7 +58,7 @@ Se preferisci fare tutto a mano:
 ### L'ESP32 non viene rilevato
 - Usa un **cavo USB dati** (non solo ricarica)
 - Prova un'altra porta USB
-- Installa i driver CH343 per la tua scheda
+- La S3-Zero usa USB-Serial-JTAG nativa: non servono driver CH343
 
 ### La compilazione fallisce
 - Controlla che `src/secrets.h` esista e sia compilato correttamente
